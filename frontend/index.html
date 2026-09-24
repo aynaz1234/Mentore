@@ -1,0 +1,3864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fc">
+<title>Mentora — AI Academic Advisor</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg1:#f8f9ff;
+    --bg2:#eef1ff;
+    --glass:rgba(255,255,255,.56);
+    --glass-strong:rgba(255,255,255,.76);
+    --border:rgba(255,255,255,.78);
+    --text:#202334;
+    --muted:#74798b;
+    --accent:#8b7cf6;
+    --accent2:#b4a9ff;
+    --shadow:0 24px 70px rgba(65,57,120,.12);
+    --radius:26px;
+}
+
+body{
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    min-height:100vh;
+    color:var(--text);
+    background:
+        radial-gradient(circle at 10% 10%, rgba(174,157,255,.35), transparent 30%),
+        radial-gradient(circle at 90% 15%, rgba(157,218,255,.30), transparent 28%),
+        radial-gradient(circle at 70% 90%, rgba(255,193,220,.22), transparent 32%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+    overflow-x:hidden;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.app{
+    min-height:100vh;
+    display:flex;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    width:270px;
+    min-height:100vh;
+    padding:25px 18px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    z-index:50;
+
+    background:rgba(255,255,255,.38);
+    backdrop-filter:blur(28px);
+    -webkit-backdrop-filter:blur(28px);
+    border-right:1px solid rgba(255,255,255,.65);
+
+    display:flex;
+    flex-direction:column;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 10px 28px;
+}
+
+.brand-logo{
+    width:45px;
+    height:45px;
+    border-radius:15px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:800;
+    font-size:20px;
+    color:white;
+
+    background:
+        linear-gradient(135deg,var(--accent),var(--accent2));
+
+    box-shadow:
+        0 10px 25px rgba(100,85,210,.25);
+}
+
+.brand-text h1{
+    font-size:21px;
+    letter-spacing:-.5px;
+}
+
+.brand-text p{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:2px;
+}
+
+.mode-switch{
+    padding:5px;
+    border-radius:17px;
+    background:rgba(255,255,255,.45);
+    border:1px solid rgba(255,255,255,.7);
+    display:flex;
+    gap:4px;
+    margin:0 4px 22px;
+}
+
+.mode-btn{
+    flex:1;
+    padding:10px 8px;
+    border-radius:13px;
+    background:transparent;
+    color:var(--muted);
+    font-size:12px;
+    transition:.25s;
+}
+
+.mode-btn.active{
+    background:rgba(255,255,255,.82);
+    color:var(--text);
+    box-shadow:0 5px 16px rgba(80,70,130,.10);
+    font-weight:700;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.nav-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:13px 14px;
+    border-radius:17px;
+
+    background:transparent;
+    color:var(--muted);
+    text-align:left;
+
+    transition:.25s;
+}
+
+.nav-btn:hover{
+    background:rgba(255,255,255,.45);
+    color:var(--text);
+}
+
+.nav-btn.active{
+    background:rgba(255,255,255,.74);
+    color:var(--text);
+    box-shadow:0 9px 28px rgba(70,65,120,.08);
+}
+
+.nav-icon{
+    width:28px;
+    text-align:center;
+    font-size:18px;
+}
+
+.sidebar-bottom{
+    margin-top:auto;
+}
+
+.profile-mini{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:13px;
+    border-radius:18px;
+    background:rgba(255,255,255,.42);
+    border:1px solid rgba(255,255,255,.6);
+}
+
+.avatar{
+    width:38px;
+    height:38px;
+    border-radius:13px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+.profile-mini-text{
+    min-width:0;
+}
+
+.profile-mini-text strong{
+    display:block;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.profile-mini-text span{
+    font-size:10px;
+    color:var(--muted);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    margin-left:270px;
+    width:calc(100% - 270px);
+    min-height:100vh;
+    padding:30px;
+}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.page-title h2{
+    font-size:28px;
+    letter-spacing:-1px;
+}
+
+.page-title p{
+    color:var(--muted);
+    margin-top:5px;
+    font-size:13px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.icon-btn{
+    width:44px;
+    height:44px;
+    border-radius:15px;
+    background:rgba(255,255,255,.54);
+    border:1px solid rgba(255,255,255,.7);
+    color:var(--text);
+    box-shadow:0 8px 25px rgba(60,55,110,.06);
+    transition:.2s;
+}
+
+.icon-btn:hover{
+    transform:translateY(-2px);
+}
+
+.page{
+    display:none;
+    animation:pageIn .35s ease;
+}
+
+.page.active{
+    display:block;
+}
+
+@keyframes pageIn{
+    from{
+        opacity:0;
+        transform:translateY(7px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.glass{
+    background:var(--glass);
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+}
+
+.card{
+    padding:24px;
+}
+
+.grid{
+    display:grid;
+    gap:18px;
+}
+
+.grid-2{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.grid-3{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.hero{
+    padding:34px;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:230px;
+    border-radius:50%;
+    background:rgba(255,255,255,.25);
+    right:-90px;
+    top:-100px;
+    filter:blur(5px);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:7px 11px;
+    border-radius:999px;
+    background:rgba(255,255,255,.56);
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:15px;
+}
+
+.hero h3{
+    font-size:32px;
+    line-height:1.15;
+    letter-spacing:-1.3px;
+    max-width:650px;
+}
+
+.hero p{
+    color:var(--muted);
+    margin-top:12px;
+    max-width:650px;
+    line-height:1.7;
+    font-size:14px;
+}
+
+.stats{
+    margin-top:20px;
+}
+
+.stat{
+    min-height:130px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.stat-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.stat-icon{
+    width:42px;
+    height:42px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.55);
+}
+
+.stat-number{
+    font-size:26px;
+    font-weight:800;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* =========================
+   FORMS
+========================= */
+
+.form-card{
+    padding:28px;
+}
+
+.form-title{
+    margin-bottom:22px;
+}
+
+.form-title h3{
+    font-size:20px;
+}
+
+.form-title p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+    line-height:1.6;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+.field label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+    padding-left:3px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    border:none;
+    outline:none;
+
+    color:var(--text);
+
+    background:rgba(255,255,255,.57);
+    border:1px solid rgba(255,255,255,.76);
+
+    border-radius:17px;
+    padding:13px 15px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.5),
+        0 7px 22px rgba(60,55,110,.045);
+
+    transition:.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:var(--accent);
+    box-shadow:
+        0 0 0 3px rgba(139,124,246,.10),
+        0 9px 25px rgba(60,55,110,.07);
+}
+
+textarea{
+    min-height:210px;
+    resize:vertical;
+    line-height:1.7;
+}
+
+select{
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:
+        linear-gradient(45deg,transparent 50%,var(--muted) 50%),
+        linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:
+        calc(100% - 19px) 50%,
+        calc(100% - 13px) 50%;
+    background-size:6px 6px,6px 6px;
+    background-repeat:no-repeat;
+    padding-right:40px;
+}
+
+[dir="rtl"] select{
+    background-position:
+        19px 50%,
+        13px 50%;
+    padding-right:15px;
+    padding-left:40px;
+}
+
+.helper{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+}
+
+.primary-btn{
+    margin-top:18px;
+    width:100%;
+    padding:14px 18px;
+    border-radius:17px;
+
+    color:white;
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent),
+            var(--accent2)
+        );
+
+    box-shadow:
+        0 13px 30px rgba(105,91,215,.22);
+
+    transition:.25s;
+}
+
+.primary-btn:hover{
+    transform:translateY(-2px);
+}
+
+.primary-btn:disabled{
+    opacity:.6;
+    cursor:wait;
+    transform:none;
+}
+
+.secondary-btn{
+    padding:11px 15px;
+    border-radius:14px;
+    background:rgba(255,255,255,.6);
+    color:var(--text);
+    border:1px solid rgba(255,255,255,.75);
+}
+
+.danger-btn{
+    padding:11px 15px;
+    border-radius:14px;
+    background:rgba(255,100,120,.10);
+    color:#c95768;
+    border:1px solid rgba(255,150,160,.25);
+}
+
+/* =========================
+   PLAN RESULT
+========================= */
+
+.plan-result{
+    margin-top:18px;
+    padding:25px;
+    display:none;
+}
+
+.plan-result.show{
+    display:block;
+}
+
+.plan-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:18px;
+}
+
+.plan-header h3{
+    font-size:19px;
+}
+
+.plan-type-badge{
+    font-size:11px;
+    padding:7px 11px;
+    border-radius:999px;
+    background:rgba(255,255,255,.62);
+    color:var(--muted);
+}
+
+.plan-content{
+    line-height:1.8;
+    font-size:14px;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.plan-content strong{
+    font-weight:800;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat-layout{
+    height:calc(100vh - 125px);
+    min-height:570px;
+    display:flex;
+    flex-direction:column;
+}
+
+.chat-box{
+    flex:1;
+    overflow-y:auto;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.chat-empty{
+    margin:auto;
+    text-align:center;
+    max-width:500px;
+    color:var(--muted);
+}
+
+.chat-empty-icon{
+    width:65px;
+    height:65px;
+    border-radius:22px;
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    background:rgba(255,255,255,.58);
+}
+
+.chat-empty h3{
+    color:var(--text);
+    margin-bottom:7px;
+}
+
+.chat-empty p{
+    font-size:13px;
+    line-height:1.7;
+}
+
+.message{
+    max-width:78%;
+    padding:14px 17px;
+    border-radius:19px;
+    line-height:1.7;
+    font-size:13px;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.message.user{
+    align-self:flex-end;
+    background:
+        linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    border-bottom-right-radius:6px;
+}
+
+.message.ai{
+    align-self:flex-start;
+    background:rgba(255,255,255,.65);
+    border:1px solid rgba(255,255,255,.75);
+    border-bottom-left-radius:6px;
+}
+
+.typing{
+    display:flex;
+    gap:5px;
+    align-items:center;
+}
+
+.typing span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--muted);
+    animation:typing 1.1s infinite;
+}
+
+.typing span:nth-child(2){
+    animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+    animation-delay:.3s;
+}
+
+@keyframes typing{
+    0%,60%,100%{
+        opacity:.25;
+        transform:translateY(0);
+    }
+    30%{
+        opacity:1;
+        transform:translateY(-3px);
+    }
+}
+
+.chat-input-area{
+    padding:15px;
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+}
+
+.chat-input-area textarea{
+    min-height:52px;
+    max-height:150px;
+    resize:none;
+}
+
+.send-btn{
+    width:52px;
+    height:52px;
+    border-radius:17px;
+    flex:none;
+
+    color:#fff;
+    background:
+        linear-gradient(135deg,var(--accent),var(--accent2));
+
+    box-shadow:0 10px 25px rgba(105,91,215,.2);
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.setting-section{
+    padding:25px;
+    margin-bottom:18px;
+}
+
+.setting-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:17px 0;
+    border-bottom:1px solid rgba(100,100,120,.08);
+}
+
+.setting-row:last-child{
+    border-bottom:none;
+    padding-bottom:0;
+}
+
+.setting-row:first-child{
+    padding-top:0;
+}
+
+.setting-info{
+    min-width:0;
+}
+
+.setting-info h4{
+    font-size:14px;
+}
+
+.setting-info p{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+    margin-top:4px;
+}
+
+.setting-control{
+    flex:none;
+}
+
+.toggle{
+    width:51px;
+    height:29px;
+    border-radius:999px;
+    background:rgba(100,100,120,.18);
+    padding:3px;
+    transition:.25s;
+}
+
+.toggle span{
+    display:block;
+    width:23px;
+    height:23px;
+    border-radius:50%;
+    background:white;
+    box-shadow:0 3px 8px rgba(0,0,0,.12);
+    transition:.25s;
+}
+
+.toggle.active{
+    background:var(--accent);
+}
+
+.toggle.active span{
+    transform:translateX(22px);
+}
+
+[dir="rtl"] .toggle.active span{
+    transform:translateX(-22px);
+}
+
+.time-row{
+    display:flex;
+    gap:9px;
+    align-items:center;
+}
+
+.time-row input{
+    width:145px;
+}
+
+.theme-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:14px;
+}
+
+.theme-option{
+    min-height:72px;
+    border-radius:17px;
+    border:2px solid transparent;
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.theme-option:hover{
+    transform:translateY(-2px);
+}
+
+.theme-option.selected{
+    border-color:var(--accent);
+}
+
+.theme-option span{
+    position:absolute;
+    bottom:7px;
+    left:9px;
+    font-size:10px;
+    color:#333;
+    font-weight:700;
+}
+
+/* theme previews */
+
+.preview-soft{
+    background:linear-gradient(135deg,#eeeaff,#dfeeff);
+}
+
+.preview-rose{
+    background:linear-gradient(135deg,#ffe4ed,#ffd3e0);
+}
+
+.preview-lavender{
+    background:linear-gradient(135deg,#e8ddff,#d9d2ff);
+}
+
+.preview-ocean{
+    background:linear-gradient(135deg,#d8f5ff,#cde5ff);
+}
+
+.preview-sage{
+    background:linear-gradient(135deg,#dff2e5,#c9e7d2);
+}
+
+.preview-peach{
+    background:linear-gradient(135deg,#ffe8d2,#ffd5bc);
+}
+
+.preview-midnight{
+    background:linear-gradient(135deg,#282940,#45496f);
+}
+
+.preview-pearl{
+    background:linear-gradient(135deg,#fafafa,#e5e8ed);
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-card{
+    max-width:720px;
+}
+
+.profile-big{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.profile-avatar-big{
+    width:75px;
+    height:75px;
+    border-radius:25px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:28px;
+    font-weight:800;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 14px 35px rgba(100,85,210,.2);
+}
+
+.profile-big h3{
+    font-size:22px;
+}
+
+.profile-big p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translate(-50%,30px);
+    z-index:1000;
+
+    background:rgba(35,36,50,.88);
+    color:white;
+
+    padding:12px 17px;
+    border-radius:15px;
+
+    font-size:12px;
+
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+
+    backdrop-filter:blur(15px);
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================
+   MOBILE NAV
+========================= */
+
+.mobile-nav{
+    display:none;
+}
+
+/* =========================
+   RTL
+========================= */
+
+[dir="rtl"] body{
+    font-family:
+        Tahoma,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+[dir="rtl"] .sidebar{
+    left:auto;
+    right:0;
+    border-right:none;
+    border-left:1px solid rgba(255,255,255,.65);
+}
+
+[dir="rtl"] .main{
+    margin-left:0;
+    margin-right:270px;
+}
+
+[dir="rtl"] .nav-btn{
+    text-align:right;
+}
+
+[dir="rtl"] .message.user{
+    align-self:flex-start;
+    border-bottom-right-radius:19px;
+    border-bottom-left-radius:6px;
+}
+
+[dir="rtl"] .message.ai{
+    align-self:flex-end;
+    border-bottom-left-radius:19px;
+    border-bottom-right-radius:6px;
+}
+
+/* =========================
+   THEMES
+========================= */
+
+body.theme-rose{
+    --bg1:#fff7fa;
+    --bg2:#ffeaf1;
+    --glass:rgba(255,247,250,.57);
+    --accent:#e88ca9;
+    --accent2:#f4b5c8;
+    --shadow:0 24px 70px rgba(150,75,100,.13);
+}
+
+body.theme-lavender{
+    --bg1:#faf8ff;
+    --bg2:#eee8ff;
+    --accent:#927bea;
+    --accent2:#b9a9ff;
+}
+
+body.theme-ocean{
+    --bg1:#f3fcff;
+    --bg2:#dff3ff;
+    --accent:#59aeda;
+    --accent2:#8acde9;
+}
+
+body.theme-sage{
+    --bg1:#f5fbf6;
+    --bg2:#e1f1e4;
+    --accent:#73ae84;
+    --accent2:#a8d1b3;
+}
+
+body.theme-peach{
+    --bg1:#fffaf5;
+    --bg2:#ffead9;
+    --accent:#e99b69;
+    --accent2:#f4b68d;
+}
+
+body.theme-midnight{
+    --bg1:#161827;
+    --bg2:#242742;
+    --glass:rgba(35,37,62,.58);
+    --glass-strong:rgba(38,40,68,.78);
+    --border:rgba(255,255,255,.10);
+    --text:#f1f2ff;
+    --muted:#a6aac3;
+    --accent:#9a8cff;
+    --accent2:#6f8bff;
+    --shadow:0 24px 70px rgba(0,0,0,.3);
+}
+
+body.theme-midnight input,
+body.theme-midnight textarea,
+body.theme-midnight select{
+    color:var(--text);
+    background:rgba(255,255,255,.08);
+    border-color:rgba(255,255,255,.11);
+}
+
+body.theme-midnight select{
+    background-color:rgba(255,255,255,.08);
+}
+
+body.theme-midnight .theme-option span{
+    color:#fff;
+}
+
+body.theme-pearl{
+    --bg1:#ffffff;
+    --bg2:#edf0f4;
+    --glass:rgba(255,255,255,.68);
+    --accent:#8d96a8;
+    --accent2:#b8bec9;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:950px){
+
+    .sidebar{
+        width:220px;
+    }
+
+    .main{
+        margin-left:220px;
+        width:calc(100% - 220px);
+    }
+
+    [dir="rtl"] .main{
+        margin-right:220px;
+    }
+
+    .grid-3{
+        grid-template-columns:1fr;
+    }
+
+    .theme-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+}
+
+@media(max-width:720px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .main,
+    [dir="rtl"] .main{
+        margin:0;
+        width:100%;
+        padding:17px;
+        padding-bottom:95px;
+    }
+
+    .topbar{
+        margin-bottom:18px;
+    }
+
+    .page-title h2{
+        font-size:23px;
+    }
+
+    .hero{
+        padding:25px;
+    }
+
+    .hero h3{
+        font-size:26px;
+    }
+
+    .grid-2{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .theme-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .mobile-nav{
+        display:flex;
+        position:fixed;
+        left:12px;
+        right:12px;
+        bottom:12px;
+        z-index:100;
+
+        padding:8px;
+
+        border-radius:23px;
+
+        background:rgba(255,255,255,.72);
+        backdrop-filter:blur(25px);
+        -webkit-backdrop-filter:blur(25px);
+
+        border:1px solid rgba(255,255,255,.82);
+        box-shadow:0 15px 45px rgba(40,35,80,.16);
+    }
+
+    .mobile-nav button{
+        flex:1;
+        background:transparent;
+        color:var(--muted);
+        padding:9px 4px;
+        border-radius:16px;
+        font-size:10px;
+    }
+
+    .mobile-nav button.active{
+        color:var(--text);
+        background:rgba(255,255,255,.72);
+        font-weight:700;
+    }
+
+    .mobile-nav-icon{
+        display:block;
+        font-size:18px;
+        margin-bottom:3px;
+    }
+
+    .chat-layout{
+        height:calc(100vh - 120px);
+        min-height:500px;
+    }
+
+    .message{
+        max-width:90%;
+    }
+
+    .setting-row{
+        align-items:flex-start;
+    }
+
+    .time-row{
+        flex-direction:column;
+        align-items:flex-end;
+    }
+
+    .time-row input{
+        width:120px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+        <div class="brand-logo">M</div>
+        <div class="brand-text">
+            <h1>Mentora</h1>
+            <p>AI Academic Advisor</p>
+        </div>
+    </div>
+
+    <div class="mode-switch">
+        <button class="mode-btn active" data-mode="study">
+            📚 Study
+        </button>
+
+        <button class="mode-btn" data-mode="work">
+            💼 Work
+        </button>
+    </div>
+
+    <nav class="nav">
+
+        <button class="nav-btn active" data-page="overview">
+            <span class="nav-icon">⌂</span>
+            <span>Overview</span>
+        </button>
+
+        <button class="nav-btn" data-page="planner">
+            <span class="nav-icon">✦</span>
+            <span>AI Planner</span>
+        </button>
+
+        <button class="nav-btn" data-page="chat">
+            <span class="nav-icon">◌</span>
+            <span>Ask Mentora</span>
+        </button>
+
+        <button class="nav-btn" data-page="profile">
+            <span class="nav-icon">○</span>
+            <span>Profile</span>
+        </button>
+
+        <button class="nav-btn" data-page="settings">
+            <span class="nav-icon">⚙</span>
+            <span>Settings</span>
+        </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+        <div class="profile-mini">
+
+            <div class="avatar" id="profileAvatar">
+                M
+            </div>
+
+            <div class="profile-mini-text">
+                <strong id="profileName">
+                    Student
+                </strong>
+
+                <span id="profileMode">
+                    Study mode
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div class="page-title">
+
+            <h2 id="pageTitle">
+                Overview
+            </h2>
+
+            <p id="pageSubtitle">
+                Your personal AI academic advisor
+            </p>
+
+        </div>
+
+        <div class="top-actions">
+
+            <button
+                class="icon-btn"
+                id="notificationQuick"
+                title="Notifications">
+                🔔
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         OVERVIEW
+    ========================= -->
+
+    <section class="page active" id="page-overview">
+
+        <div class="glass hero">
+
+            <div class="hero-content">
+
+                <div class="badge">
+                    ✦ AI-powered advisor
+                </div>
+
+                <h3 id="welcomeTitle">
+                    Plan smarter. Learn better.
+                </h3>
+
+                <p>
+                    Mentora helps you build realistic daily and weekly
+                    plans, improve concentration, prepare for exams,
+                    understand difficult subjects and stay motivated.
+                </p>
+
+                <button
+                    class="primary-btn"
+                    style="max-width:250px"
+                    onclick="goToPage('planner')">
+                    Create an AI Plan
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid grid-3 stats">
+
+            <div class="glass card stat">
+
+                <div class="stat-top">
+                    <div class="stat-icon">✦</div>
+                </div>
+
+                <div>
+                    <div class="stat-number">
+                        AI
+                    </div>
+
+                    <div class="stat-label">
+                        Personalized planning
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="glass card stat">
+
+                <div class="stat-top">
+                    <div class="stat-icon">◌</div>
+                </div>
+
+                <div>
+                    <div class="stat-number">
+                        24/7
+                    </div>
+
+                    <div class="stat-label">
+                        Ask Mentora
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="glass card stat">
+
+                <div class="stat-top">
+                    <div class="stat-icon">🔔</div>
+                </div>
+
+                <div>
+                    <div class="stat-number">
+                        Daily
+                    </div>
+
+                    <div class="stat-label">
+                        Personal reminders
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid grid-2" style="margin-top:18px">
+
+            <div class="glass card">
+
+                <div class="form-title">
+
+                    <h3>
+                        What can Mentora help with?
+                    </h3>
+
+                    <p>
+                        Use the planner when you want a structured plan,
+                        or ask Mentora directly for advice.
+                    </p>
+
+                </div>
+
+                <div class="helper" style="font-size:13px">
+
+                    📅 Weekly study planning<br><br>
+
+                    📚 Exam preparation<br><br>
+
+                    🧠 Concentration and focus<br><br>
+
+                    🔁 Revision and active recall<br><br>
+
+                    🎯 Long-term goals<br><br>
+
+                    💬 Motivation and procrastination
+
+                </div>
+
+            </div>
+
+
+            <div class="glass card">
+
+                <div class="form-title">
+
+                    <h3>
+                        Your reminder
+                    </h3>
+
+                    <p>
+                        Mentora can remind you once every day at the
+                        time you choose.
+                    </p>
+
+                </div>
+
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    gap:15px;
+                ">
+
+                    <div>
+
+                        <div
+                            id="overviewReminderStatus"
+                            style="font-size:14px;font-weight:700;">
+                            Reminders are off
+                        </div>
+
+                        <div
+                            id="overviewReminderTime"
+                            class="helper"
+                            style="margin-top:4px;">
+                            Choose a time in Settings.
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="goToPage('settings')">
+                        Manage
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         AI PLANNER
+    ========================= -->
+
+    <section class="page" id="page-planner">
+
+        <div class="glass form-card">
+
+            <div class="form-title">
+
+                <h3>
+                    ✦ Create your personalized plan
+                </h3>
+
+                <p>
+                    Tell Mentora what your situation is. You don't need
+                    to create a list of tasks or specify exact hours.
+                    Just describe everything you need to accomplish.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label for="planType">
+                        Plan type
+                    </label>
+
+                    <select id="planType">
+
+                        <option value="weekly">
+                            Weekly Plan — 7 days
+                        </option>
+
+                        <option value="daily">
+                            Daily Plan
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="energyInput">
+                        Current energy
+                    </label>
+
+                    <select id="energyInput">
+
+                        <option value="low">
+                            Low — I need a lighter plan
+                        </option>
+
+                        <option value="medium" selected>
+                            Medium — Normal
+                        </option>
+
+                        <option value="high">
+                            High — I can handle more
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="goalInput">
+                        Main goal
+                    </label>
+
+                    <input
+                        id="goalInput"
+                        type="text"
+                        dir="auto"
+                        placeholder="For example: Prepare for my grade 9 exams"
+                    >
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="descriptionInput">
+                        Describe your situation
+                    </label>
+
+                    <textarea
+                        id="descriptionInput"
+                        dir="auto"
+                        placeholder="Tell Mentora everything it needs to know...
+
+For example:
+I have one week before my exam. I need to study mathematics chapters 1–5, science chapters 2–4 and Persian literature. Mathematics is difficult for me, especially chapter 4. I also have school during the week. I want to know what I should study each day, how I should study it, when I should review, and how I can stay focused.
+
+You can write in Persian or English."
+                    ></textarea>
+
+                    <div class="helper">
+                        You can write freely. Mention chapters, subjects,
+                        difficulty, deadlines, available days, previous
+                        knowledge, weaknesses or anything else that matters.
+                        Mentora will organize it for you.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                id="generatePlan">
+                ✦ Generate with Mentora
+            </button>
+
+        </div>
+
+
+        <div
+            class="glass plan-result"
+            id="planResult">
+
+            <div class="plan-header">
+
+                <h3>
+                    Your Mentora Plan
+                </h3>
+
+                <span
+                    class="plan-type-badge"
+                    id="planTypeBadge">
+                    Weekly
+                </span>
+
+            </div>
+
+            <div
+                class="plan-content"
+                id="planContent">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         CHAT
+    ========================= -->
+
+    <section class="page" id="page-chat">
+
+        <div class="glass chat-layout">
+
+            <div
+                class="chat-box"
+                id="chatBox">
+
+                <div
+                    class="chat-empty"
+                    id="chatEmpty">
+
+                    <div class="chat-empty-icon">
+                        ✦
+                    </div>
+
+                    <h3>
+                        Ask Mentora
+                    </h3>
+
+                    <p>
+                        Ask about studying, concentration, motivation,
+                        difficult subjects, exams, planning, revision,
+                        productivity or anything related to your goals.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="chat-input-area">
+
+                <textarea
+                    id="chatInput"
+                    dir="auto"
+                    rows="1"
+                    placeholder="Ask Mentora anything..."
+                ></textarea>
+
+                <button
+                    class="send-btn"
+                    id="sendChat"
+                    title="Send">
+                    ➤
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         PROFILE
+    ========================= -->
+
+    <section class="page" id="page-profile">
+
+        <div class="glass card profile-card">
+
+            <div class="profile-big">
+
+                <div
+                    class="profile-avatar-big"
+                    id="profileAvatarBig">
+                    M
+                </div>
+
+                <div>
+
+                    <h3 id="profileBigName">
+                        Student
+                    </h3>
+
+                    <p id="profileBigMode">
+                        Study mode
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="nameInput">
+                    Your name
+                </label>
+
+                <input
+                    id="nameInput"
+                    type="text"
+                    dir="auto"
+                    placeholder="Enter your name"
+                >
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                id="saveProfile"
+                style="margin-top:15px;">
+                Save Profile
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         SETTINGS
+    ========================= -->
+
+    <section class="page" id="page-settings">
+
+
+        <!-- REMINDERS -->
+
+        <div class="glass setting-section">
+
+            <div class="form-title">
+
+                <h3>
+                    🔔 Daily reminders
+                </h3>
+
+                <p>
+                    Mentora can show a browser notification once every
+                    day at the time you choose.
+                </p>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <h4>
+                        Enable daily reminder
+                    </h4>
+
+                    <p>
+                        You'll receive one Mentora reminder every day.
+                    </p>
+
+                </div>
+
+                <div class="setting-control">
+
+                    <button
+                        class="toggle"
+                        id="notificationToggle"
+                        aria-label="Toggle notifications">
+
+                        <span></span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <h4>
+                        Reminder time
+                    </h4>
+
+                    <p>
+                        This is the only time Mentora uses for its
+                        daily reminder. It does not schedule your
+                        individual study activities.
+                    </p>
+
+                </div>
+
+                <div class="setting-control">
+
+                    <div class="time-row">
+
+                        <input
+                            type="time"
+                            id="reminderTime"
+                            value="19:00"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <h4>
+                        Test notification
+                    </h4>
+
+                    <p>
+                        Check whether browser notifications are working
+                        on this device.
+                    </p>
+
+                </div>
+
+                <div class="setting-control">
+
+                    <button
+                        class="secondary-btn"
+                        id="testNotification">
+                        Test
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPEARANCE -->
+
+        <div class="glass setting-section">
+
+            <div class="form-title">
+
+                <h3>
+                    ✦ Appearance
+                </h3>
+
+                <p>
+                    Choose your Mentora glass environment.
+                </p>
+
+            </div>
+
+
+            <div class="theme-grid">
+
+                <div
+                    class="theme-option preview-soft selected"
+                    data-theme="soft">
+
+                    <span>
+                        Soft
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-rose"
+                    data-theme="rose">
+
+                    <span>
+                        Rose
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-lavender"
+                    data-theme="lavender">
+
+                    <span>
+                        Lavender
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-ocean"
+                    data-theme="ocean">
+
+                    <span>
+                        Ocean
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-sage"
+                    data-theme="sage">
+
+                    <span>
+                        Sage
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-peach"
+                    data-theme="peach">
+
+                    <span>
+                        Peach
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-midnight"
+                    data-theme="midnight">
+
+                    <span>
+                        Midnight
+                    </span>
+
+                </div>
+
+                <div
+                    class="theme-option preview-pearl"
+                    data-theme="pearl">
+
+                    <span>
+                        Pearl
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- GENERAL -->
+
+        <div class="glass setting-section">
+
+            <div class="form-title">
+
+                <h3>
+                    ⚙ General
+                </h3>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <h4>
+                        Default mode
+                    </h4>
+
+                    <p>
+                        Choose which mode Mentora opens with.
+                    </p>
+
+                </div>
+
+                <div class="setting-control">
+
+                    <select
+                        id="defaultMode"
+                        style="width:145px;">
+
+                        <option value="study">
+                            Study
+                        </option>
+
+                        <option value="work">
+                            Work
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <h4>
+                        Clear conversations
+                    </h4>
+
+                    <p>
+                        Remove the chat history stored in this browser.
+                    </p>
+
+                </div>
+
+                <div class="setting-control">
+
+                    <button
+                        class="danger-btn"
+                        id="clearChats">
+                        Clear
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     MOBILE NAV
+========================= -->
+
+<nav class="mobile-nav">
+
+    <button
+        class="active"
+        data-page="overview">
+
+        <span class="mobile-nav-icon">
+            ⌂
+        </span>
+
+        Home
+
+    </button>
+
+
+    <button data-page="planner">
+
+        <span class="mobile-nav-icon">
+            ✦
+        </span>
+
+        Plan
+
+    </button>
+
+
+    <button data-page="chat">
+
+        <span class="mobile-nav-icon">
+            ◌
+        </span>
+
+        Chat
+
+    </button>
+
+
+    <button data-page="profile">
+
+        <span class="mobile-nav-icon">
+            ○
+        </span>
+
+        Profile
+
+    </button>
+
+
+    <button data-page="settings">
+
+        <span class="mobile-nav-icon">
+            ⚙
+        </span>
+
+        Settings
+
+    </button>
+
+</nav>
+
+
+<div
+    class="toast"
+    id="toast">
+</div>
+
+
+<script>
+
+/* =========================================================
+   MENTORA — MAIN JAVASCRIPT
+========================================================= */
+
+
+/* =========================
+   STORAGE KEYS
+========================= */
+
+const STORAGE = {
+
+    mode: "mentoraMode",
+
+    theme: "mentoraTheme",
+
+    name: "mentoraName",
+
+    notifications: "mentoraNotifications",
+
+    reminderTime: "mentoraReminderTime",
+
+    defaultMode: "mentoraDefaultMode",
+
+    chat: "mentoraChat"
+
+};
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentMode =
+    localStorage.getItem(STORAGE.mode) || "study";
+
+let currentTheme =
+    localStorage.getItem(STORAGE.theme) || "soft";
+
+let chatHistory = [];
+
+let reminderTimer = null;
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const $ = id => document.getElementById(id);
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(message){
+
+    const toast = $("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2800);
+
+}
+
+
+/* =========================
+   RTL DETECTION
+========================= */
+
+function containsPersian(text){
+
+    return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(
+        text || ""
+    );
+
+}
+
+
+function setDirection(element, text){
+
+    if(!element) return;
+
+    element.dir =
+        containsPersian(text)
+            ? "rtl"
+            : "ltr";
+
+}
+
+
+/* =========================
+   APPLY THEME
+========================= */
+
+function applyTheme(theme){
+
+    document.body.classList.remove(
+        "theme-rose",
+        "theme-lavender",
+        "theme-ocean",
+        "theme-sage",
+        "theme-peach",
+        "theme-midnight",
+        "theme-pearl"
+    );
+
+    if(theme !== "soft"){
+
+        document.body.classList.add(
+            "theme-" + theme
+        );
+
+    }
+
+    localStorage.setItem(
+        STORAGE.theme,
+        theme
+    );
+
+
+    document.querySelectorAll(".theme-option")
+        .forEach(option => {
+
+            option.classList.toggle(
+                "selected",
+                option.dataset.theme === theme
+            );
+
+        });
+
+}
+
+
+/* =========================
+   THEME BUTTONS
+========================= */
+
+document.querySelectorAll(".theme-option")
+    .forEach(option => {
+
+        option.addEventListener("click", () => {
+
+            applyTheme(
+                option.dataset.theme
+            );
+
+            showToast(
+                "Theme updated."
+            );
+
+        });
+
+    });
+
+
+applyTheme(currentTheme);
+
+
+/* =========================
+   MODE
+========================= */
+
+function updateModeUI(){
+
+    document.querySelectorAll(".mode-btn")
+        .forEach(btn => {
+
+            btn.classList.toggle(
+                "active",
+                btn.dataset.mode === currentMode
+            );
+
+        });
+
+
+    $("profileMode").textContent =
+        currentMode === "study"
+            ? "Study mode"
+            : "Work mode";
+
+
+    $("profileBigMode").textContent =
+        currentMode === "study"
+            ? "Study mode"
+            : "Work mode";
+
+}
+
+
+document.querySelectorAll(".mode-btn")
+    .forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+            currentMode =
+                btn.dataset.mode;
+
+            localStorage.setItem(
+                STORAGE.mode,
+                currentMode
+            );
+
+            updateModeUI();
+
+            showToast(
+                currentMode === "study"
+                    ? "Study mode selected."
+                    : "Work mode selected."
+            );
+
+        });
+
+    });
+
+
+updateModeUI();
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+const pageTitles = {
+
+    overview: [
+        "Overview",
+        "Your personal AI academic advisor"
+    ],
+
+    planner: [
+        "AI Planner",
+        "Create a personalized daily or weekly plan"
+    ],
+
+    chat: [
+        "Ask Mentora",
+        "Your AI advisor is here"
+    ],
+
+    profile: [
+        "Profile",
+        "Personalize your Mentora experience"
+    ],
+
+    settings: [
+        "Settings",
+        "Customize Mentora"
+    ]
+
+};
+
+
+function goToPage(page){
+
+    document.querySelectorAll(".page")
+        .forEach(section => {
+
+            section.classList.remove("active");
+
+        });
+
+
+    const target =
+        $("page-" + page);
+
+    if(target){
+
+        target.classList.add("active");
+
+    }
+
+
+    document.querySelectorAll(
+        ".nav-btn, .mobile-nav button"
+    ).forEach(btn => {
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.page === page
+        );
+
+    });
+
+
+    if(pageTitles[page]){
+
+        $("pageTitle").textContent =
+            pageTitles[page][0];
+
+        $("pageSubtitle").textContent =
+            pageTitles[page][1];
+
+    }
+
+}
+
+
+window.goToPage = goToPage;
+
+
+document.querySelectorAll(
+    ".nav-btn, .mobile-nav button"
+).forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        goToPage(
+            btn.dataset.page
+        );
+
+    });
+
+});
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function getInitial(name){
+
+    if(!name) return "M";
+
+    return name
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+}
+
+
+function loadProfile(){
+
+    const name =
+        localStorage.getItem(
+            STORAGE.name
+        ) || "Student";
+
+
+    $("profileName").textContent =
+        name;
+
+    $("profileBigName").textContent =
+        name;
+
+    $("nameInput").value =
+        name === "Student"
+            ? ""
+            : name;
+
+
+    const initial =
+        getInitial(name);
+
+
+    $("profileAvatar").textContent =
+        initial;
+
+    $("profileAvatarBig").textContent =
+        initial;
+
+
+    $("welcomeTitle").textContent =
+        name === "Student"
+            ? "Plan smarter. Learn better."
+            : `Welcome back, ${name}.`;
+
+}
+
+
+$("saveProfile")
+    .addEventListener("click", () => {
+
+        const name =
+            $("nameInput").value.trim();
+
+
+        const finalName =
+            name || "Student";
+
+
+        localStorage.setItem(
+            STORAGE.name,
+            finalName
+        );
+
+
+        loadProfile();
+
+        showToast(
+            "Profile saved."
+        );
+
+    });
+
+
+loadProfile();
+
+
+/* =========================
+   DEFAULT MODE
+========================= */
+
+const savedDefaultMode =
+    localStorage.getItem(
+        STORAGE.defaultMode
+    ) || "study";
+
+
+$("defaultMode").value =
+    savedDefaultMode;
+
+
+$("defaultMode")
+    .addEventListener("change", () => {
+
+        const value =
+            $("defaultMode").value;
+
+        localStorage.setItem(
+            STORAGE.defaultMode,
+            value
+        );
+
+        currentMode = value;
+
+        localStorage.setItem(
+            STORAGE.mode,
+            value
+        );
+
+        updateModeUI();
+
+        showToast(
+            "Default mode updated."
+        );
+
+    });
+
+
+/* =========================
+   DAILY NOTIFICATIONS
+========================= */
+
+function notificationsSupported(){
+
+    return "Notification" in window;
+
+}
+
+
+async function requestNotificationPermission(){
+
+    if(!notificationsSupported()){
+
+        showToast(
+            "This browser does not support notifications."
+        );
+
+        return false;
+
+    }
+
+
+    if(Notification.permission === "granted"){
+
+        return true;
+
+    }
+
+
+    if(Notification.permission === "denied"){
+
+        showToast(
+            "Notifications are blocked in browser settings."
+        );
+
+        return false;
+
+    }
+
+
+    try{
+
+        const permission =
+            await Notification.requestPermission();
+
+        if(permission === "granted"){
+
+            return true;
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+
+    return false;
+
+}
+
+
+function notificationEnabled(){
+
+    return localStorage.getItem(
+        STORAGE.notifications
+    ) === "true";
+
+}
+
+
+function getReminderTime(){
+
+    return localStorage.getItem(
+        STORAGE.reminderTime
+    ) || "19:00";
+
+}
+
+
+function formatTime(time){
+
+    if(!time) return "";
+
+    const parts =
+        time.split(":");
+
+    let hour =
+        parseInt(parts[0],10);
+
+    const minute =
+        parts[1] || "00";
+
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+    hour =
+        hour % 12 || 12;
+
+    return `${hour}:${minute} ${suffix}`;
+
+}
+
+
+function updateReminderUI(){
+
+    const enabled =
+        notificationEnabled();
+
+    const time =
+        getReminderTime();
+
+
+    const toggle =
+        $("notificationToggle");
+
+    toggle.classList.toggle(
+        "active",
+        enabled
+    );
+
+
+    $("reminderTime").value =
+        time;
+
+
+    if(enabled){
+
+        $("overviewReminderStatus")
+            .textContent =
+                "Daily reminder is ON";
+
+        $("overviewReminderTime")
+            .textContent =
+                `Every day at ${formatTime(time)}`;
+
+    }else{
+
+        $("overviewReminderStatus")
+            .textContent =
+                "Reminders are off";
+
+        $("overviewReminderTime")
+            .textContent =
+                "Choose a time in Settings.";
+
+    }
+
+}
+
+
+async function enableNotifications(){
+
+    const allowed =
+        await requestNotificationPermission();
+
+
+    if(!allowed){
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        STORAGE.notifications,
+        "true"
+    );
+
+
+    updateReminderUI();
+
+    scheduleDailyReminder();
+
+    showToast(
+        "Daily reminders enabled."
+    );
+
+}
+
+
+function disableNotifications(){
+
+    localStorage.setItem(
+        STORAGE.notifications,
+        "false"
+    );
+
+
+    clearReminderTimer();
+
+    updateReminderUI();
+
+    showToast(
+        "Daily reminders disabled."
+    );
+
+}
+
+
+$("notificationToggle")
+    .addEventListener("click", async () => {
+
+        if(notificationEnabled()){
+
+            disableNotifications();
+
+        }else{
+
+            await enableNotifications();
+
+        }
+
+    });
+
+
+/* =========================
+   TEST NOTIFICATION
+========================= */
+
+$("testNotification")
+    .addEventListener("click", async () => {
+
+        const allowed =
+            await requestNotificationPermission();
+
+
+        if(!allowed){
+
+            return;
+
+        }
+
+
+        try{
+
+            new Notification(
+                "Mentora",
+                {
+                    body:
+                        "Your Mentora reminder is working. ✦",
+                    icon:"",
+                    tag:"mentora-test"
+                }
+            );
+
+            showToast(
+                "Test notification sent."
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            showToast(
+                "Could not show notification."
+            );
+
+        }
+
+    });
+
+
+/* =========================
+   DAILY SCHEDULER
+========================= */
+
+function clearReminderTimer(){
+
+    if(reminderTimer){
+
+        clearTimeout(
+            reminderTimer
+        );
+
+        reminderTimer = null;
+
+    }
+
+}
+
+
+function getNextReminderTimestamp(time){
+
+    const now =
+        new Date();
+
+    const [hours,minutes] =
+        time.split(":")
+            .map(Number);
+
+
+    const target =
+        new Date();
+
+    target.setHours(
+        hours,
+        minutes,
+        0,
+        0
+    );
+
+
+    if(target <= now){
+
+        target.setDate(
+            target.getDate() + 1
+        );
+
+    }
+
+
+    return target.getTime();
+
+}
+
+
+function scheduleDailyReminder(){
+
+    clearReminderTimer();
+
+
+    if(!notificationEnabled()){
+
+        return;
+
+    }
+
+
+    if(!notificationsSupported()){
+
+        return;
+
+    }
+
+
+    if(Notification.permission !== "granted"){
+
+        return;
+
+    }
+
+
+    const time =
+        getReminderTime();
+
+
+    const timestamp =
+        getNextReminderTimestamp(
+            time
+        );
+
+
+    const delay =
+        timestamp - Date.now();
+
+
+    reminderTimer =
+        setTimeout(() => {
+
+            showDailyReminder();
+
+            scheduleDailyReminder();
+
+        }, Math.max(delay,1000));
+
+}
+
+
+function showDailyReminder(){
+
+    if(!notificationEnabled()){
+
+        return;
+
+    }
+
+
+    if(!notificationsSupported()){
+
+        return;
+
+    }
+
+
+    if(Notification.permission !== "granted"){
+
+        return;
+
+    }
+
+
+    try{
+
+        const notification =
+            new Notification(
+                "Mentora ✦",
+                {
+                    body:
+                        "It's time to check your Mentora plan and continue your goals.",
+                    tag:
+                        "mentora-daily-reminder"
+                }
+            );
+
+
+        notification.onclick = () => {
+
+            window.focus();
+
+            goToPage("planner");
+
+            notification.close();
+
+        };
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+$("reminderTime")
+    .addEventListener("change", () => {
+
+        const time =
+            $("reminderTime").value;
+
+
+        if(!time){
+
+            return;
+
+        }
+
+
+        localStorage.setItem(
+            STORAGE.reminderTime,
+            time
+        );
+
+
+        if(notificationEnabled()){
+
+            scheduleDailyReminder();
+
+        }
+
+
+        updateReminderUI();
+
+        showToast(
+            `Reminder set for ${formatTime(time)} every day.`
+        );
+
+    });
+
+
+updateReminderUI();
+
+scheduleDailyReminder();
+
+
+/* =========================
+   QUICK NOTIFICATION BUTTON
+========================= */
+
+$("notificationQuick")
+    .addEventListener("click", async () => {
+
+        goToPage("settings");
+
+        if(!notificationEnabled()){
+
+            await enableNotifications();
+
+        }
+
+    });
+
+
+/* =========================
+   PLAN GENERATION
+========================= */
+
+$("generatePlan")
+    .addEventListener("click", async () => {
+
+        const button =
+            $("generatePlan");
+
+        const description =
+            $("descriptionInput")
+                .value
+                .trim();
+
+        const goal =
+            $("goalInput")
+                .value
+                .trim();
+
+        const planType =
+            $("planType")
+                .value;
+
+        const energy =
+            $("energyInput")
+                .value;
+
+
+        if(!description){
+
+            showToast(
+                containsPersian(goal)
+                    ? "لطفاً توضیحاتت را وارد کن."
+                    : "Please describe your situation first."
+            );
+
+            $("descriptionInput").focus();
+
+            return;
+
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Mentora is creating your plan…";
+
+
+        $("planResult")
+            .classList.remove("show");
+
+
+        setDirection(
+            $("descriptionInput"),
+            description
+        );
+
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/plan",
+                    {
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:JSON.stringify({
+
+                            description:
+                                description,
+
+                            goal:
+                                goal,
+
+                            plan_type:
+                                planType,
+
+                            energy:
+                                energy,
+
+                            mode:
+                                currentMode
+
+                        })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if(!response.ok || !data.ok){
+
+                throw new Error(
+                    data.error ||
+                    "Could not generate the plan."
+                );
+
+            }
+
+
+            $("planContent")
+                .textContent =
+                    data.plan || "";
+
+
+            $("planTypeBadge")
+                .textContent =
+                    planType === "weekly"
+                        ? "Weekly • 7 days"
+                        : "Daily";
+
+
+            $("planResult")
+                .classList.add("show");
+
+
+            setDirection(
+                $("planContent"),
+                data.plan
+            );
+
+
+            showToast(
+                containsPersian(data.plan)
+                    ? "برنامه با موفقیت ساخته شد."
+                    : "Your plan is ready."
+            );
+
+
+        }catch(error){
+
+            console.error(error);
+
+            $("planContent")
+                .textContent =
+                    error.message ||
+                    "Something went wrong.";
+
+
+            $("planResult")
+                .classList.add("show");
+
+
+            setDirection(
+                $("planContent"),
+                error.message
+            );
+
+
+        }finally{
+
+            button.disabled = false;
+
+            button.textContent =
+                "✦ Generate with Mentora";
+
+        }
+
+    });
+
+
+/* =========================
+   CHAT STORAGE
+========================= */
+
+function loadChat(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                STORAGE.chat
+            );
+
+
+        if(saved){
+
+            chatHistory =
+                JSON.parse(saved);
+
+        }
+
+    }catch(error){
+
+        chatHistory = [];
+
+    }
+
+
+    renderChat();
+
+}
+
+
+function saveChat(){
+
+    localStorage.setItem(
+        STORAGE.chat,
+        JSON.stringify(
+            chatHistory.slice(-30)
+        )
+    );
+
+}
+
+
+function renderChat(){
+
+    const box =
+        $("chatBox");
+
+
+    box.innerHTML = "";
+
+
+    if(!chatHistory.length){
+
+        box.innerHTML = `
+
+            <div class="chat-empty" id="chatEmpty">
+
+                <div class="chat-empty-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    Ask Mentora
+                </h3>
+
+                <p>
+                    Ask about studying, concentration,
+                    motivation, difficult subjects, exams,
+                    planning, revision, productivity or
+                    your goals.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    chatHistory.forEach(item => {
+
+        addMessageToDOM(
+            item.role,
+            item.content,
+            false
+        );
+
+    });
+
+
+    box.scrollTop =
+        box.scrollHeight;
+
+}
+
+
+/* =========================
+   CHAT MESSAGE
+========================= */
+
+function addMessageToDOM(
+    role,
+    content,
+    scroll = true
+){
+
+    const box =
+        $("chatBox");
+
+
+    const message =
+        document.createElement("div");
+
+
+    message.className =
+        "message " +
+        (role === "user"
+            ? "user"
+            : "ai");
+
+
+    message.textContent =
+        content;
+
+
+    setDirection(
+        message,
+        content
+    );
+
+
+    box.appendChild(
+        message
+    );
+
+
+    if(scroll){
+
+        box.scrollTop =
+            box.scrollHeight;
+
+    }
+
+}
+
+
+/* =========================
+   TYPING INDICATOR
+========================= */
+
+function addTyping(){
+
+    const box =
+        $("chatBox");
+
+
+    const typing =
+        document.createElement("div");
+
+
+    typing.className =
+        "message ai";
+
+    typing.id =
+        "typingMessage";
+
+
+    typing.innerHTML = `
+
+        <div class="typing">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+    `;
+
+
+    box.appendChild(
+        typing
+    );
+
+
+    box.scrollTop =
+        box.scrollHeight;
+
+}
+
+
+function removeTyping(){
+
+    const typing =
+        $("typingMessage");
+
+    if(typing){
+
+        typing.remove();
+
+    }
+
+}
+
+
+/* =========================
+   SEND CHAT
+========================= */
+
+async function sendChatMessage(){
+
+    const input =
+        $("chatInput");
+
+
+    const message =
+        input.value.trim();
+
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    input.value = "";
+
+    input.style.height =
+        "52px";
+
+
+    setDirection(
+        input,
+        message
+    );
+
+
+    chatHistory.push({
+
+        role:"user",
+
+        content:message
+
+    });
+
+
+    addMessageToDOM(
+        "user",
+        message
+    );
+
+
+    saveChat();
+
+    addTyping();
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/chat",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        message:
+                            message,
+
+                        mode:
+                            currentMode,
+
+                        history:
+                            chatHistory.slice(
+                                -16
+                            )
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        removeTyping();
+
+
+        if(!response.ok || !data.ok){
+
+            throw new Error(
+                data.error ||
+                "Could not get a response."
+            );
+
+        }
+
+
+        const answer =
+            data.answer ||
+            "No response received.";
+
+
+        chatHistory.push({
+
+            role:"assistant",
+
+            content:answer
+
+        });
+
+
+        addMessageToDOM(
+            "assistant",
+            answer
+        );
+
+
+        saveChat();
+
+
+    }catch(error){
+
+        removeTyping();
+
+
+        console.error(error);
+
+
+        const errorText =
+            containsPersian(message)
+                ? `خطا در ارتباط با Mentora:\n${error.message}`
+                : `Mentora connection error:\n${error.message}`;
+
+
+        addMessageToDOM(
+            "assistant",
+            errorText
+        );
+
+
+        chatHistory.push({
+
+            role:"assistant",
+
+            content:errorText
+
+        });
+
+
+        saveChat();
+
+    }
+
+}
+
+
+$("sendChat")
+    .addEventListener(
+        "click",
+        sendChatMessage
+    );
+
+
+$("chatInput")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if(
+                event.key === "Enter" &&
+                !event.shiftKey
+            ){
+
+                event.preventDefault();
+
+                sendChatMessage();
+
+            }
+
+        }
+    );
+
+
+/* =========================
+   CHAT AUTO RESIZE
+========================= */
+
+$("chatInput")
+    .addEventListener(
+        "input",
+        function(){
+
+            this.style.height =
+                "auto";
+
+            this.style.height =
+                Math.min(
+                    this.scrollHeight,
+                    150
+                ) + "px";
+
+            setDirection(
+                this,
+                this.value
+            );
+
+        }
+    );
+
+
+/* =========================
+   CLEAR CHATS
+========================= */
+
+$("clearChats")
+    .addEventListener("click", () => {
+
+        const isPersian =
+            containsPersian(
+                $("chatInput").value
+            );
+
+
+        const confirmed =
+            confirm(
+                isPersian
+                    ? "آیا مطمئنی می‌خواهی تمام گفتگوهای Mentora پاک شوند؟"
+                    : "Are you sure you want to clear all Mentora conversations?"
+            );
+
+
+        if(!confirmed){
+
+            return;
+
+        }
+
+
+        chatHistory = [];
+
+
+        localStorage.removeItem(
+            STORAGE.chat
+        );
+
+
+        renderChat();
+
+
+        showToast(
+            isPersian
+                ? "گفتگوها پاک شدند."
+                : "Conversations cleared."
+        );
+
+    });
+
+
+/* =========================
+   INPUT DIRECTION
+========================= */
+
+[
+    $("goalInput"),
+    $("descriptionInput"),
+    $("chatInput"),
+    $("nameInput")
+].forEach(input => {
+
+    if(!input) return;
+
+
+    input.addEventListener(
+        "input",
+        () => {
+
+            setDirection(
+                input,
+                input.value
+            );
+
+        }
+    );
+
+});
+
+
+/* =========================
+   INITIALIZE CHAT
+========================= */
+
+loadChat();
+
+
+/* =========================
+   INITIAL PAGE
+========================= */
+
+goToPage("overview");
+
+
+/* =========================
+   PERIODIC REMINDER CHECK
+   Helps recover if the tab stays open
+   after sleep/backgrounding.
+========================= */
+
+setInterval(() => {
+
+    if(
+        notificationEnabled() &&
+        Notification.permission === "granted"
+    ){
+
+        scheduleDailyReminder();
+
+    }
+
+}, 60000);
+
+
+/* =========================
+   VISIBILITY RECOVERY
+========================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(!document.hidden){
+
+            if(notificationEnabled()){
+
+                scheduleDailyReminder();
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
